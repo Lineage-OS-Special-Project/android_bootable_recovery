@@ -197,17 +197,26 @@ int TextMenu::DrawItems(int /*x*/, int y, int screen_width, bool long_press) con
   for (size_t i = MenuStart(); i < MenuEnd(); ++i) {
     const auto selected = i == selection();
 
-    // Draw the highlight bar.
-    draw_funcs_.SetColor(long_press ? UIElement::MENU_SEL_BG_ACTIVE
-                         : selected ? UIElement::MENU_SEL_BG
-                                    : UIElement::MENU_BG);
+if (selected) {
+  // Draw the highlight bar only for the selected item.
+  draw_funcs_.SetColor(long_press ? UIElement::MENU_SEL_BG_ACTIVE
+                                  : UIElement::MENU_SEL_BG);
 
-    int bar_height = padding + char_height_ + padding;
-    draw_funcs_.DrawHighlightBar(padding, y + offset, screen_width - (padding * 2), bar_height);
+  int bar_height = padding + char_height_ + padding;
+  draw_funcs_.DrawHighlightBar(
+      padding,
+      y + offset,
+      screen_width - (padding * 2),
+      bar_height);
+}
 
-    draw_funcs_.SetColor(selected ? UIElement::MENU_SEL_FG : UIElement::MENU);
-    offset += draw_funcs_.DrawTextLine(padding * 2, y + offset, TextItem(i), false /* bold */);
-    offset += spacing;
+draw_funcs_.SetColor(selected ? UIElement::MENU_SEL_FG : UIElement::MENU);
+offset += draw_funcs_.DrawTextLine(
+    padding * 2,
+    y + offset,
+    TextItem(i),
+    false /* bold */);
+offset += spacing;
   }
   offset += horizontal_rule_height;
 
