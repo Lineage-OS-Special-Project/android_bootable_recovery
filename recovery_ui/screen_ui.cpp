@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <thread>
@@ -737,7 +738,19 @@ int ScreenRecoveryUI::DrawHorizontalRule(int y) const {
 void ScreenRecoveryUI::DrawHighlightBar(int x, int y, int width, int height) const {
   if (y + height > ScreenHeight())
     height = ScreenHeight() - y;
-  gr_fill(x, y, x + width, y + height);
+
+  int radius = std::min(height * 15 / 100, std::min(width / 2, height / 2));
+  for (int row = 0; row < height; ++row) {
+    int inset = 0;
+    if (radius > 0 && row < radius) {
+      int dy = radius - row;
+      inset = radius - static_cast<int>(sqrt(radius * radius - dy * dy));
+    } else if (radius > 0 && row >= height - radius) {
+      int dy = row - (height - radius - 1);
+      inset = radius - static_cast<int>(sqrt(radius * radius - dy * dy));
+    }
+    gr_fill(x + inset, y + row, x + width - inset, y + row + 1);
+  }
 }
 
 void ScreenRecoveryUI::DrawScrollBar(int y, int height) const {
